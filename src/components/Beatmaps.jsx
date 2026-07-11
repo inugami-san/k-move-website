@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const mockBeatmaps = [
-  { id: '1', title: 'Neon Horizon', bpm: 120, length: 30, difficulty: 'Easy', notes: 38, creator: 'Antigravity', type: 'Synthwave', freq: 110, color: 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)' },
-  { id: '2', title: 'Pose Calibrator', bpm: 130, length: 45, difficulty: 'Medium', notes: 65, creator: 'Christian', type: 'Chiptune', freq: 130, color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-  { id: '3', title: 'Radial Resonance', bpm: 140, length: 60, difficulty: 'Hard', notes: 112, creator: 'Inugami-san', type: 'Electronic', freq: 150, color: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' },
-  { id: '4', title: 'Body Synthesizer', bpm: 150, length: 90, difficulty: 'Expert', notes: 184, creator: 'RhythmBot', type: 'Synthwave', freq: 180, color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
+  { id: '5', title: 'Stormglass Arc', bpm: 125, length: 180, difficulty: 'Expert', notes: 142, creator: 'Inugami-san', type: 'Celestial Orchestral', freq: 160, color: 'linear-gradient(135deg, #c9994a 0%, #d1ac6b 100%)' },
+  { id: '1', title: 'Neon Horizon', bpm: 120, length: 30, difficulty: 'Easy', notes: 38, creator: 'Antigravity', type: 'Synthwave', freq: 110, color: 'linear-gradient(135deg, #6baed6 0%, #4f8ab1 100%)' },
+  { id: '2', title: 'Pose Calibrator', bpm: 130, length: 45, difficulty: 'Medium', notes: 65, creator: 'Christian', type: 'Chiptune', freq: 130, color: 'linear-gradient(135deg, #f5ede0 0%, #d1ac6b 100%)' },
+  { id: '3', title: 'Radial Resonance', bpm: 140, length: 60, difficulty: 'Hard', notes: 112, creator: 'Inugami-san', type: 'Electronic', freq: 150, color: 'linear-gradient(135deg, #6baed6 0%, #c9994a 100%)' },
+  { id: '4', title: 'Body Synthesizer', bpm: 150, length: 90, difficulty: 'Expert', notes: 184, creator: 'RhythmBot', type: 'Synthwave', freq: 180, color: 'linear-gradient(135deg, #8e94a5 0%, #121629 100%)' },
 ];
 
 export default function Beatmaps() {
@@ -114,11 +115,11 @@ export default function Beatmaps() {
         for (let i = 0; i < data.length; i++) {
           const val = data[i];
           const grad = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - val);
-          grad.addColorStop(0, '#d500f9');
-          grad.addColorStop(1, i % 2 === 0 ? '#00e5ff' : '#ff4500');
+          grad.addColorStop(0, '#d1ac6b'); // Gold
+          grad.addColorStop(1, i % 2 === 0 ? '#6baed6' : '#c9994a'); // Celestial Blue or Amber Gold
           
           ctx.fillStyle = grad;
-          ctx.shadowColor = i % 2 === 0 ? '#00e5ff' : '#ff4500';
+          ctx.shadowColor = i % 2 === 0 ? '#6baed6' : '#c9994a';
           ctx.shadowBlur = 4;
           ctx.fillRect(i * barWidth + 2, canvas.height - val, barWidth - 4, val);
           ctx.shadowBlur = 0; // reset

@@ -72,7 +72,7 @@ export default function Profile() {
         justifyContent: 'space-between',
         flexWrap: 'wrap',
         gap: '2rem',
-        background: 'linear-gradient(135deg, rgba(10, 12, 22, 0.8) 0%, rgba(0, 229, 255, 0.02) 100%)'
+        background: 'linear-gradient(135deg, rgba(10, 12, 22, 0.8) 0%, rgba(107, 173, 214, 0.02) 100%)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.75rem' }}>
           {/* Avatar Icon */}

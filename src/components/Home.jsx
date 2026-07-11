@@ -24,12 +24,16 @@ export default function Home({ setActiveTab }) {
     let leftCatcherAngle = Math.PI;
     let rightCatcherAngle = 0;
     
+    let lastBeat = 0;
+    let targetCoreRotation = 0;
+    let coreRotation = 0;
+    
     const render = () => {
       time += 0.016;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       // Draw background grid lines (faded)
-      ctx.strokeStyle = 'rgba(255,255,255,0.015)';
+      ctx.strokeStyle = 'rgba(209, 172, 107, 0.012)';
       ctx.lineWidth = 1;
       for (let i = 20; i < canvas.width; i += 20) {
         ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
@@ -37,8 +41,8 @@ export default function Home({ setActiveTab }) {
       }
       
       // Draw Hit Ring
-      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'rgba(209, 172, 107, 0.12)';
+      ctx.lineWidth = 1.8;
       ctx.beginPath();
       ctx.arc(cx, cy, hitRingRadius, 0, Math.PI * 2);
       ctx.stroke();
@@ -86,23 +90,28 @@ export default function Home({ setActiveTab }) {
         note.radius -= note.speed * 0.016;
         
         // Render note guide lines
-        ctx.strokeStyle = note.type === 'leftHand' ? 'rgba(0, 229, 255, 0.02)' : 'rgba(255, 69, 0, 0.02)';
+        ctx.strokeStyle = note.type === 'leftHand' ? 'rgba(107, 173, 214, 0.02)' : 'rgba(201, 153, 74, 0.02)';
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(cx, cy);
         ctx.lineTo(cx + spawnRadius * Math.cos(note.angle), cy + spawnRadius * Math.sin(note.angle));
         ctx.stroke();
         
-        // Draw note
+        // Draw note (Bullseye style: thin ring + center dot)
         const nx = cx + note.radius * Math.cos(note.angle);
         const ny = cy + note.radius * Math.sin(note.angle);
-        ctx.fillStyle = note.type === 'leftHand' ? '#00e5ff' : '#ff4500';
-        ctx.shadowColor = ctx.fillStyle;
-        ctx.shadowBlur = 8;
+        const nColor = note.type === 'leftHand' ? '#6baed6' : '#c9994a';
+        
+        ctx.strokeStyle = nColor;
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.arc(nx, ny, 6, 0, Math.PI * 2);
+        ctx.stroke();
+        
+        ctx.fillStyle = nColor;
+        ctx.beginPath();
+        ctx.arc(nx, ny, 2, 0, Math.PI * 2);
         ctx.fill();
-        ctx.shadowBlur = 0; // reset
         
         // Catch check
         if (note.radius <= hitRingRadius) {
@@ -116,7 +125,7 @@ export default function Home({ setActiveTab }) {
               vx: Math.cos(pAngle) * pSpeed,
               vy: Math.sin(pAngle) * pSpeed,
               size: Math.random() * 2 + 1,
-              color: note.type === 'leftHand' ? '#00e5ff' : '#ff4500',
+              color: nColor,
               alpha: 1
             });
           }
@@ -143,8 +152,8 @@ export default function Home({ setActiveTab }) {
       // Draw Catchers
       const lx = cx + hitRingRadius * Math.cos(leftCatcherAngle);
       const ly = cy + hitRingRadius * Math.sin(leftCatcherAngle);
-      ctx.fillStyle = '#00e5ff';
-      ctx.shadowColor = '#00e5ff';
+      ctx.fillStyle = '#6baed6';
+      ctx.shadowColor = '#6baed6';
       ctx.shadowBlur = 12;
       ctx.beginPath();
       ctx.arc(lx, ly, 10, 0, Math.PI * 2);
@@ -152,27 +161,44 @@ export default function Home({ setActiveTab }) {
       
       const rx = cx + hitRingRadius * Math.cos(rightCatcherAngle);
       const ry = cy + hitRingRadius * Math.sin(rightCatcherAngle);
-      ctx.fillStyle = '#ff4500';
-      ctx.shadowColor = '#ff4500';
+      ctx.fillStyle = '#c9994a';
+      ctx.shadowColor = '#c9994a';
       ctx.shadowBlur = 12;
       ctx.beginPath();
       ctx.arc(rx, ry, 10, 0, Math.PI * 2);
       ctx.fill();
       ctx.shadowBlur = 0; // reset
       
-      // Central Core
-      ctx.fillStyle = '#05060a';
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-      ctx.lineWidth = 2;
+      // Snap core diamond on beats
+      const beatInterval = 0.5; // 120 bpm = 0.5s
+      const currentBeat = Math.floor(time / beatInterval);
+      if (currentBeat !== lastBeat) {
+        lastBeat = currentBeat;
+        targetCoreRotation += Math.PI / 4;
+      }
+      coreRotation += (targetCoreRotation - coreRotation) * 0.25;
+      
+      // Draw central Core (Diamond shape)
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(coreRotation);
+      ctx.fillStyle = '#05060b';
+      ctx.strokeStyle = '#d1ac6b';
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.arc(cx, cy, 12, 0, Math.PI * 2);
+      ctx.moveTo(0, -12);
+      ctx.lineTo(12, 0);
+      ctx.lineTo(0, 12);
+      ctx.lineTo(-12, 0);
+      ctx.closePath();
       ctx.fill();
       ctx.stroke();
       
-      ctx.fillStyle = '#d500f9';
+      ctx.fillStyle = '#d1ac6b';
       ctx.beginPath();
-      ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+      ctx.arc(0, 0, 4, 0, Math.PI * 2);
       ctx.fill();
+      ctx.restore();
       
       animationFrame = requestAnimationFrame(render);
     };

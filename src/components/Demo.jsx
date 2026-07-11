@@ -277,9 +277,9 @@ export default function Demo() {
       const rElbowX = (rShoulderX + rWristX) / 2 + Math.cos(time * 0.5) * 5;
       const rElbowY = (rShoulderY + rWristY) / 2 + 10;
       
-      // Draw Skeleton Lines
-      ctx.strokeStyle = '#00e5ff'; // Neon Cyan
-      ctx.shadowColor = '#00e5ff';
+      // Draw Skeleton Lines (Celestial Blue / Gold / Cream)
+      ctx.strokeStyle = '#6baed6'; // Celestial Blue
+      ctx.shadowColor = '#6baed6';
       ctx.shadowBlur = 4;
       ctx.lineWidth = 2.5;
       
@@ -289,13 +289,13 @@ export default function Demo() {
       ctx.stroke();
       
       // Face crosshairs (Webcam track mockup)
-      ctx.strokeStyle = 'rgba(0, 229, 255, 0.25)';
+      ctx.strokeStyle = 'rgba(107, 173, 214, 0.25)';
       ctx.beginPath();
       ctx.moveTo(headX - 6, headY); ctx.lineTo(headX + 6, headY);
       ctx.moveTo(headX, headY - 6); ctx.lineTo(headX, headY + 6);
       ctx.stroke();
       
-      ctx.strokeStyle = '#00e5ff';
+      ctx.strokeStyle = '#6baed6';
       // Neck & Shoulders
       ctx.beginPath();
       ctx.moveTo(headX, headY + 14);
@@ -312,7 +312,7 @@ export default function Demo() {
       ctx.stroke();
       
       // Left arm (Shoulder -> Elbow -> Wrist)
-      ctx.strokeStyle = '#00e5ff'; // Cyan
+      ctx.strokeStyle = '#6baed6';
       ctx.beginPath();
       ctx.moveTo(lShoulderX, lShoulderY);
       ctx.lineTo(lElbowX, lElbowY);
@@ -320,8 +320,8 @@ export default function Demo() {
       ctx.stroke();
 
       // Right arm (Shoulder -> Elbow -> Wrist)
-      ctx.strokeStyle = '#ff4500'; // Orange-Red
-      ctx.shadowColor = '#ff4500';
+      ctx.strokeStyle = '#c9994a'; // Amber Gold
+      ctx.shadowColor = '#c9994a';
       ctx.beginPath();
       ctx.moveTo(rShoulderX, rShoulderY);
       ctx.lineTo(rElbowX, rElbowY);
@@ -331,12 +331,12 @@ export default function Demo() {
       
       // Joint nodes
       const joints = [
-        { x: neckX, y: neckY, col: '#fff' },
-        { x: lShoulderX, y: lShoulderY, col: '#00e5ff' },
-        { x: rShoulderX, y: rShoulderY, col: '#ff4500' },
-        { x: lElbowX, y: lElbowY, col: '#00e5ff' },
-        { x: rElbowX, y: rElbowY, col: '#ff4500' },
-        { x: spineX, y: spineY, col: '#fff' }
+        { x: neckX, y: neckY, col: '#f5ede0' },
+        { x: lShoulderX, y: lShoulderY, col: '#6baed6' },
+        { x: rShoulderX, y: rShoulderY, col: '#c9994a' },
+        { x: lElbowX, y: lElbowY, col: '#6baed6' },
+        { x: rElbowX, y: rElbowY, col: '#c9994a' },
+        { x: spineX, y: spineY, col: '#f5ede0' }
       ];
       
       joints.forEach(j => {
@@ -347,15 +347,15 @@ export default function Demo() {
       });
       
       // Glowing Hands / Wrists Nodes
-      ctx.fillStyle = '#00e5ff';
-      ctx.shadowColor = '#00e5ff';
+      ctx.fillStyle = '#6baed6';
+      ctx.shadowColor = '#6baed6';
       ctx.shadowBlur = 8;
       ctx.beginPath();
       ctx.arc(lWristX, lWristY, 6, 0, Math.PI * 2);
       ctx.fill();
       
-      ctx.fillStyle = '#ff4500';
-      ctx.shadowColor = '#ff4500';
+      ctx.fillStyle = '#c9994a';
+      ctx.shadowColor = '#c9994a';
       ctx.beginPath();
       ctx.arc(rWristX, rWristY, 6, 0, Math.PI * 2);
       ctx.fill();
@@ -363,14 +363,14 @@ export default function Demo() {
       
       // Calibration HUD overlays
       ctx.font = '10px monospace';
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.fillStyle = 'rgba(245, 237, 224, 0.4)';
       ctx.fillText('CAM FEED IN: 60FPS', 20, 30);
       ctx.fillText('CALIBRATION: ACTIVE', 20, 45);
       
       // Render coordinate values
-      ctx.fillStyle = '#00e5ff';
+      ctx.fillStyle = '#6baed6';
       ctx.fillText(`LH_ANGLE: ${(leftAngle * 180 / Math.PI).toFixed(0)}°`, 20, canvas.height - 35);
-      ctx.fillStyle = '#ff4500';
+      ctx.fillStyle = '#c9994a';
       ctx.fillText(`RH_ANGLE: ${(rightAngle * 180 / Math.PI).toFixed(0)}°`, 20, canvas.height - 20);
 
       // Pulse scanline
@@ -416,10 +416,10 @@ export default function Demo() {
       gridPulseRef.current = Math.max(0, gridPulseRef.current - dt * 2);
       
       // 2. Draw Perspective Grid Background (Wow factor!)
-      ctx.strokeStyle = `rgba(213, 0, 249, ${0.03 + gridPulseRef.current * 0.08})`;
+      ctx.strokeStyle = `rgba(209, 172, 107, ${0.025 + gridPulseRef.current * 0.08})`;
       ctx.lineWidth = 1;
       
-      // Radial lines from center
+      // Radial lines from center (elegant spokes)
       const radialLines = 16;
       for (let rIdx = 0; rIdx < radialLines; rIdx++) {
         const radAngle = (rIdx / radialLines) * Math.PI * 2;
@@ -433,17 +433,17 @@ export default function Demo() {
       const ringSteps = 4;
       for (let sIdx = 1; sIdx <= ringSteps; sIdx++) {
         const radStep = hitRingRadius + ((spawnRadius - hitRingRadius) / ringSteps) * sIdx;
-        ctx.strokeStyle = `rgba(255, 255, 255, ${0.015 + gridPulseRef.current * 0.04})`;
+        ctx.strokeStyle = `rgba(209, 172, 107, ${0.012 + gridPulseRef.current * 0.04})`;
         ctx.beginPath();
         ctx.arc(cx, cy, radStep, 0, Math.PI * 2);
         ctx.stroke();
       }
       
       // 3. Draw Hit Ring Perimeter (Glowing layout)
-      ctx.strokeStyle = gridPulseRef.current > 0.5 ? 'rgba(0, 229, 255, 0.4)' : 'rgba(255, 255, 255, 0.06)';
-      ctx.shadowColor = '#00e5ff';
+      ctx.strokeStyle = gridPulseRef.current > 0.5 ? 'rgba(209, 172, 107, 0.5)' : 'rgba(209, 172, 107, 0.15)';
+      ctx.shadowColor = '#d1ac6b';
       ctx.shadowBlur = gridPulseRef.current * 10;
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = 2.0;
       ctx.beginPath();
       ctx.arc(cx, cy, hitRingRadius, 0, Math.PI * 2);
       ctx.stroke();
@@ -473,14 +473,14 @@ export default function Demo() {
       leftAngleRef.current = (leftAngleRef.current + Math.PI * 2) % (Math.PI * 2);
       rightAngleRef.current = (rightAngleRef.current + Math.PI * 2) % (Math.PI * 2);
       
-      // 5. Draw Catchers
+      // 5. Draw Catchers (Celestial Blue and Amber Gold)
       const catcherSize = 14;
       
-      // Left Catcher (Cyan)
+      // Left Catcher (Celestial Blue)
       const lx = cx + hitRingRadius * Math.cos(leftAngleRef.current);
       const ly = cy + hitRingRadius * Math.sin(leftAngleRef.current);
-      ctx.fillStyle = '#00e5ff';
-      ctx.shadowColor = '#00e5ff';
+      ctx.fillStyle = '#6baed6';
+      ctx.shadowColor = '#6baed6';
       ctx.shadowBlur = 18;
       ctx.beginPath();
       ctx.arc(lx, ly, catcherSize, 0, Math.PI * 2);
@@ -490,11 +490,11 @@ export default function Demo() {
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      // Right Catcher (Orange-Red)
+      // Right Catcher (Amber Gold)
       const rx = cx + hitRingRadius * Math.cos(rightAngleRef.current);
       const ry = cy + hitRingRadius * Math.sin(rightAngleRef.current);
-      ctx.fillStyle = '#ff4500';
-      ctx.shadowColor = '#ff4500';
+      ctx.fillStyle = '#c9994a';
+      ctx.shadowColor = '#c9994a';
       ctx.shadowBlur = 18;
       ctx.beginPath();
       ctx.arc(rx, ry, catcherSize, 0, Math.PI * 2);
@@ -554,14 +554,15 @@ export default function Demo() {
               
               // Scale pop-expansion up to 2.2x size (from 8px to 18px)
               const popSize = 8 + (elapsed / 0.15) * 10;
-              ctx.fillStyle = note.type === 'leftHand' ? '#00e5ff' : '#ff4500';
+              const popColor = note.type === 'leftHand' ? '#6baed6' : '#c9994a';
+              ctx.fillStyle = popColor;
               ctx.globalAlpha = 1.0 - (elapsed / 0.15); // fade out
               ctx.beginPath();
               ctx.arc(nx, ny, popSize, 0, Math.PI * 2);
               ctx.fill();
               
               // Glowing border line ring
-              ctx.strokeStyle = ctx.fillStyle;
+              ctx.strokeStyle = popColor;
               ctx.lineWidth = 1.5;
               ctx.beginPath();
               ctx.arc(nx, ny, popSize + 4, 0, Math.PI * 2);
@@ -590,7 +591,7 @@ export default function Demo() {
             
             // Render Note Trails
             note.trail.forEach((pos, idx) => {
-              ctx.fillStyle = note.type === 'leftHand' ? 'rgba(0, 229, 255, 0.25)' : 'rgba(255, 69, 0, 0.25)';
+              ctx.fillStyle = note.type === 'leftHand' ? 'rgba(107, 173, 214, 0.2)' : 'rgba(201, 153, 74, 0.2)';
               ctx.globalAlpha = pos.alpha * (idx / note.trail.length);
               ctx.beginPath();
               ctx.arc(pos.x, pos.y, 4 + (idx / note.trail.length) * 3, 0, Math.PI * 2);
@@ -598,18 +599,25 @@ export default function Demo() {
             });
             ctx.globalAlpha = 1.0; // reset
             
-            // Draw actual beat note
-            ctx.fillStyle = note.type === 'leftHand' ? '#00e5ff' : '#ff4500';
-            ctx.shadowColor = ctx.fillStyle;
-            ctx.shadowBlur = 10;
+            // Draw actual beat note (Bullseye style: thin ring stroke + center dot)
+            const nColor = note.type === 'leftHand' ? '#6baed6' : '#c9994a';
+            ctx.strokeStyle = nColor;
+            ctx.lineWidth = 1.8;
+            ctx.shadowColor = nColor;
+            ctx.shadowBlur = 6;
             ctx.beginPath();
-            ctx.arc(nx, ny, 8, 0, Math.PI * 2);
+            ctx.arc(nx, ny, 8, 0, Math.PI * 2); // outer ring
+            ctx.stroke();
+            
+            ctx.fillStyle = nColor;
+            ctx.beginPath();
+            ctx.arc(nx, ny, 2.5, 0, Math.PI * 2); // inner dot
             ctx.fill();
-            ctx.shadowBlur = 0;
+            ctx.shadowBlur = 0; // reset
             
             // Approach circular rings
             if (tRemaining > 0) {
-              ctx.strokeStyle = note.type === 'leftHand' ? 'rgba(0, 229, 255, 0.35)' : 'rgba(255, 69, 0, 0.35)';
+              ctx.strokeStyle = note.type === 'leftHand' ? 'rgba(107, 173, 214, 0.3)' : 'rgba(201, 153, 74, 0.3)';
               ctx.lineWidth = 1.5;
               ctx.beginPath();
               ctx.arc(nx, ny, 8 + tRemaining * 20, 0, Math.PI * 2);
@@ -640,23 +648,44 @@ export default function Demo() {
         }
       }
 
-      // 9. Draw central Core node
-      ctx.fillStyle = '#0a0c16';
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-      ctx.lineWidth = 3;
+      // 9. Draw central Core node (Snapping Gold Diamond)
+      const beatInterval = 0.5; // 120 bpm = 0.5s
+      const currentBeat = Math.floor(songTime / beatInterval);
+      if (!canvas.lastBeatIndex) canvas.lastBeatIndex = 0;
+      if (!canvas.coreRotationAngle) canvas.coreRotationAngle = 0;
+      if (!canvas.targetCoreRotation) canvas.targetCoreRotation = 0;
+      
+      if (currentBeat !== canvas.lastBeatIndex) {
+        canvas.lastBeatIndex = currentBeat;
+        canvas.targetCoreRotation += Math.PI / 4;
+      }
+      canvas.coreRotationAngle += (canvas.targetCoreRotation - canvas.coreRotationAngle) * 0.25;
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(canvas.coreRotationAngle);
+      
+      ctx.fillStyle = '#05060b';
+      ctx.strokeStyle = '#d1ac6b'; // goldColor
+      ctx.lineWidth = 1.8;
       ctx.beginPath();
-      ctx.arc(cx, cy, 18, 0, Math.PI * 2);
+      ctx.moveTo(0, -14);
+      ctx.lineTo(14, 0);
+      ctx.lineTo(0, 14);
+      ctx.lineTo(-14, 0);
+      ctx.closePath();
       ctx.fill();
       ctx.stroke();
       
       // Core glowing center
-      ctx.fillStyle = '#d500f9';
-      ctx.shadowColor = '#d500f9';
+      ctx.fillStyle = '#d1ac6b';
+      ctx.shadowColor = '#d1ac6b';
       ctx.shadowBlur = 12;
       ctx.beginPath();
-      ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+      ctx.arc(0, 0, 4.5, 0, Math.PI * 2);
       ctx.fill();
       ctx.shadowBlur = 0;
+      ctx.restore();
       
       if (songTime >= 31.5) {
         handleStopGame();
@@ -717,7 +746,7 @@ export default function Demo() {
       playSynthTone(synthFreq, 0.15, 'triangle', 0.15);
       
       // Spawn hit shockwaves (Wow factor!)
-      const swColor = type === 'leftHand' ? 'rgba(0, 229, 255, 0.6)' : 'rgba(255, 69, 0, 0.6)';
+      const swColor = type === 'leftHand' ? 'rgba(107, 173, 214, 0.6)' : 'rgba(201, 153, 74, 0.6)';
       shockwavesRef.current.push({
         x,
         y,
@@ -731,7 +760,7 @@ export default function Demo() {
       updateAccuracy(true);
       
       // Particles sparks
-      const pColor = type === 'leftHand' ? '#00e5ff' : '#ff4500';
+      const pColor = type === 'leftHand' ? '#6baed6' : '#c9994a';
       for (let pIdx = 0; pIdx < 16; pIdx++) {
         const pAngle = Math.random() * Math.PI * 2;
         const pSpeed = Math.random() * 110 + 50;

@@ -28,7 +28,7 @@ export default function Leaderboard() {
         gridTemplateColumns: '1.5fr 1fr',
         alignItems: 'center',
         padding: '2.5rem',
-        background: 'linear-gradient(135deg, rgba(15, 17, 26, 0.9) 0%, rgba(213, 0, 249, 0.05) 100%)'
+        background: 'linear-gradient(135deg, rgba(15, 17, 26, 0.9) 0%, rgba(209, 172, 107, 0.05) 100%)'
       }}>
         <div>
           <span style={{ fontSize: '0.85rem', color: 'var(--color-accent)', fontWeight: 'bold', letterSpacing: '0.1em' }}>
