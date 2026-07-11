@@ -88,8 +88,11 @@ export default function Demo() {
       
       osc.type = type;
       osc.frequency.setValueAtTime(freq, ctx.currentTime);
-      gainNode.gain.setValueAtTime(gainVal, ctx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      
+      // Zero-latency keysound configuration: fast attack, exponential decay
+      gainNode.gain.setValueAtTime(0, ctx.currentTime);
+      gainNode.gain.linearRampToValueAtTime(gainVal, ctx.currentTime + 0.003);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
       
       osc.connect(gainNode);
       gainNode.connect(ctx.destination);
@@ -516,18 +519,21 @@ export default function Demo() {
       });
       ctx.globalAlpha = 1.0; // reset
 
-      // 7. Update and Draw Particles
+      // 7. Update and Draw Particles (Laser Spark Lines)
       particlesRef.current = particlesRef.current.filter(p => p.alpha > 0);
       particlesRef.current.forEach(p => {
         p.x += p.vx * dt;
         p.y += p.vy * dt;
-        p.alpha -= dt * 1.5;
+        p.alpha -= dt * 2.0; // slightly faster fade out
         
-        ctx.fillStyle = p.color;
+        ctx.strokeStyle = p.color;
+        ctx.lineWidth = 1.5;
         ctx.globalAlpha = Math.max(0, p.alpha);
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.moveTo(p.x, p.y);
+        // Draw tail vector in opposite direction of velocity (laser tail)
+        ctx.lineTo(p.x - p.vx * 0.08, p.y - p.vy * 0.08);
+        ctx.stroke();
       });
       ctx.globalAlpha = 1.0;
 
@@ -536,7 +542,36 @@ export default function Demo() {
       
       for (let i = 0; i < notes.length; i++) {
         const note = notes[i];
-        if (note.caught || note.missed) continue;
+        if (note.missed) continue;
+        if (note.caught) {
+          // If caught, draw the pop-expansion animation for 0.15 seconds
+          if (note.caughtTime) {
+            const elapsed = songTime - note.caughtTime;
+            if (elapsed < 0.15) {
+              const noteAngleRad = note.angle * Math.PI / 180;
+              const nx = cx + hitRingRadius * Math.cos(noteAngleRad);
+              const ny = cy + hitRingRadius * Math.sin(noteAngleRad);
+              
+              // Scale pop-expansion up to 2.2x size (from 8px to 18px)
+              const popSize = 8 + (elapsed / 0.15) * 10;
+              ctx.fillStyle = note.type === 'leftHand' ? '#00e5ff' : '#ff4500';
+              ctx.globalAlpha = 1.0 - (elapsed / 0.15); // fade out
+              ctx.beginPath();
+              ctx.arc(nx, ny, popSize, 0, Math.PI * 2);
+              ctx.fill();
+              
+              // Glowing border line ring
+              ctx.strokeStyle = ctx.fillStyle;
+              ctx.lineWidth = 1.5;
+              ctx.beginPath();
+              ctx.arc(nx, ny, popSize + 4, 0, Math.PI * 2);
+              ctx.stroke();
+              
+              ctx.globalAlpha = 1.0; // reset
+            }
+          }
+          continue;
+        }
         
         if (songTime >= note.spawnTime) {
           const tRemaining = note.hitTime - songTime;
@@ -591,6 +626,7 @@ export default function Demo() {
               
               if (diff < 0.6) {
                 note.caught = true;
+                note.caughtTime = songTime; // Set caught time for pop animation
                 evaluateHit(tRemaining, note.type, nx, ny);
                 continue;
               }

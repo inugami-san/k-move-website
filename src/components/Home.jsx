@@ -383,7 +383,7 @@ export default function Home({ setActiveTab }) {
               Designed for Apple <span className="text-gradient-orange">Vision & SpriteKit</span>
             </h2>
             <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem', lineHeight: '1.8', fontSize: '1rem', fontWeight: 300 }}>
-              K Move links Swift's low-overhead AVFoundation camera capture with core computer vision frameworks to estimate wrist coordinates at 60 FPS. With our custom SpriteKit physics canvas, tracking jitter is mathematically smoothed out, delivering a responsive experience.
+              K Move links Swift's low-overhead AVFoundation camera capture with core computer vision frameworks to estimate wrist coordinates at a rock-solid 60 FPS. By processing frames on separate queues and disabling camera previews during gameplay, CPU/GPU thermal throttling is eliminated, keeping tracking ultra-smooth.
             </p>
             <ul style={{
               listStyle: 'none',
@@ -393,12 +393,12 @@ export default function Home({ setActiveTab }) {
               marginBottom: '2.5rem'
             }}>
               {[
-                'Zero extra sensors needed',
+                '60 FPS thermal optimizations',
                 'Procedural Synth Engine',
                 'Dual Hand coordinate mapping',
                 'Camera Mode anticipation rewards',
                 '360° sweeping note patterns',
-                'Low-latency AV Foundation audio'
+                'Zero-latency Keysound audio pool'
               ].map((feature, idx) => (
                 <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem', fontWeight: 400 }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-left)" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
