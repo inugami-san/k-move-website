@@ -409,7 +409,7 @@ export default function Home({ setActiveTab }) {
               Designed for Apple <span className="text-gradient-orange">Vision & SpriteKit</span>
             </h2>
             <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem', lineHeight: '1.8', fontSize: '1rem', fontWeight: 300 }}>
-              K Move links Swift's low-overhead AVFoundation camera capture with core computer vision frameworks to estimate wrist coordinates at a rock-solid 60 FPS. By processing frames on separate queues and disabling camera previews during gameplay, CPU/GPU thermal throttling is eliminated, keeping tracking ultra-smooth.
+              K Move utilizes Apple's high-precision ARKit Body Tracking configurations to lock limbs in 3D coordinate space with near-zero latency, bypassing standard Vision filters on compatible rear cameras. With ProMotion 120Hz rendering support and rating-specific Taptic haptics, gameplay feels incredibly tight, sensory, and tactile.
             </p>
             <ul style={{
               listStyle: 'none',
@@ -419,9 +419,9 @@ export default function Home({ setActiveTab }) {
               marginBottom: '2.5rem'
             }}>
               {[
-                '60 FPS thermal optimizations',
-                'Procedural Synth Engine',
-                'Dual Hand coordinate mapping',
+                'ARKit body tracking (10ms)',
+                'Taptic feedback confirmations',
+                'ProMotion 120Hz support',
                 'Camera Mode anticipation rewards',
                 '360° sweeping note patterns',
                 'Zero-latency Keysound audio pool'

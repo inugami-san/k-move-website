@@ -48,6 +48,7 @@ export default function Demo() {
   const [maxCombo, setMaxCombo] = useState(0);
   const [accuracy, setAccuracy] = useState(100);
   const [controlMode, setControlMode] = useState('keyboard'); // 'keyboard' or 'mouse'
+  const [isProMotion, setIsProMotion] = useState(true); // ProMotion simulated mode
   const [hitFeedback, setHitFeedback] = useState({ text: '', color: 'white', id: 0 });
   const [calibrationActive, setCalibrationActive] = useState(false);
   const [calibrationProgress, setCalibrationProgress] = useState(0);
@@ -73,10 +74,20 @@ export default function Demo() {
   const particlesRef = useRef([]);
   const shockwavesRef = useRef([]);
   const gridPulseRef = useRef(0); // flash intensity
+  const screenShakeIntensityRef = useRef(0);
+  const isProMotionRef = useRef(true);
+  
+  // Previous catcher angles for motion blur calculation
+  const prevLeftAngleRef = useRef(Math.PI);
+  const prevRightAngleRef = useRef(0);
 
   // Catcher Angles (Radians)
   const leftAngleRef = useRef(Math.PI);
   const rightAngleRef = useRef(0);
+
+  useEffect(() => {
+    isProMotionRef.current = isProMotion;
+  }, [isProMotion]);
 
   // Audio setup
   const playSynthTone = (freq, duration, type = 'sine', gainVal = 0.15) => {
@@ -396,16 +407,32 @@ export default function Demo() {
     let lastTime = performance.now();
     
     const update = (timestamp) => {
-      const dt = (timestamp - lastTime) / 1000;
+      // 60FPS Cap: If ProMotion is disabled, skip frames to enforce ~16.6ms intervals
+      if (!isProMotionRef.current) {
+        if (timestamp - lastTime < 16.0) {
+          gameLoopRef.current = requestAnimationFrame(update);
+          return;
+        }
+      }
+      
+      const dt = Math.min(0.1, (timestamp - lastTime) / 1000);
       lastTime = timestamp;
       
       // Update song time
       timeRef.current += dt;
       const songTime = timeRef.current;
       
-      // 1. Clear Canvas
+      // 1. Clear Canvas & Apply Screen Shake (Tactile Impact Simulation)
       ctx.fillStyle = '#040508';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.save();
+      screenShakeIntensityRef.current = Math.max(0, screenShakeIntensityRef.current - dt * 20);
+      if (screenShakeIntensityRef.current > 0) {
+        const shakeX = (Math.random() - 0.5) * screenShakeIntensityRef.current;
+        const shakeY = (Math.random() - 0.5) * screenShakeIntensityRef.current;
+        ctx.translate(shakeX, shakeY);
+      }
       
       const cx = canvas.width / 2;
       const cy = canvas.height / 2;
@@ -475,6 +502,31 @@ export default function Demo() {
       
       // 5. Draw Catchers (Celestial Blue and Amber Gold)
       const catcherSize = 14;
+      
+      // Optional ProMotion Motion Blur Trail
+      if (isProMotionRef.current) {
+        // Draw trailing left catcher
+        const tLeftAngle = prevLeftAngleRef.current + Math.atan2(Math.sin(leftAngleRef.current - prevLeftAngleRef.current), Math.cos(leftAngleRef.current - prevLeftAngleRef.current)) * 0.5;
+        const tlx = cx + hitRingRadius * Math.cos(tLeftAngle);
+        const tly = cy + hitRingRadius * Math.sin(tLeftAngle);
+        ctx.fillStyle = 'rgba(107, 173, 214, 0.35)'; // Faint celestial blue
+        ctx.beginPath();
+        ctx.arc(tlx, tly, catcherSize - 1, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw trailing right catcher
+        const tRightAngle = prevRightAngleRef.current + Math.atan2(Math.sin(rightAngleRef.current - prevRightAngleRef.current), Math.cos(rightAngleRef.current - prevRightAngleRef.current)) * 0.5;
+        const trx = cx + hitRingRadius * Math.cos(tRightAngle);
+        const tryVal = cy + hitRingRadius * Math.sin(tRightAngle);
+        ctx.fillStyle = 'rgba(201, 153, 74, 0.35)'; // Faint amber gold
+        ctx.beginPath();
+        ctx.arc(trx, tryVal, catcherSize - 1, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      
+      // Update previous angles
+      prevLeftAngleRef.current = leftAngleRef.current;
+      prevRightAngleRef.current = rightAngleRef.current;
       
       // Left Catcher (Celestial Blue)
       const lx = cx + hitRingRadius * Math.cos(leftAngleRef.current);
@@ -685,7 +737,7 @@ export default function Demo() {
       ctx.arc(0, 0, 4.5, 0, Math.PI * 2);
       ctx.fill();
       ctx.shadowBlur = 0;
-      ctx.restore();
+      ctx.restore(); // Restore screen shake transform
       
       if (songTime >= 31.5) {
         handleStopGame();
@@ -707,27 +759,40 @@ export default function Demo() {
       if (absDiff <= 0.08) {
         rating = 'PERFECT';
         pts = 1000;
-        col = '#00e5ff';
+        col = '#6baed6'; // Celestial Blue PERFECT color
         setPerfectCount(prev => prev + 1);
         synthFreq = type === 'leftHand' ? 523.25 : 659.25;
+        
+        // Haptic feedback & screen shake simulation (PERFECT)
+        screenShakeIntensityRef.current = 3.8;
+        if (navigator.vibrate) navigator.vibrate(30);
       } else if (absDiff <= 0.15) {
         rating = 'GOOD';
         pts = 750;
         col = '#00e676';
         setGoodCount(prev => prev + 1);
         synthFreq = type === 'leftHand' ? 392.00 : 493.88;
+        
+        screenShakeIntensityRef.current = 2.0;
+        if (navigator.vibrate) navigator.vibrate(20);
       } else if (absDiff <= 0.22) {
         rating = 'NICE';
         pts = 500;
         col = '#ffeb3b';
         setNiceCount(prev => prev + 1);
         synthFreq = 293.66;
+        
+        screenShakeIntensityRef.current = 1.2;
+        if (navigator.vibrate) navigator.vibrate(15);
       } else {
         rating = 'OKAY';
         pts = 250;
         col = '#ff9100';
         setOkayCount(prev => prev + 1);
         synthFreq = 220.00;
+        
+        screenShakeIntensityRef.current = 0.8;
+        if (navigator.vibrate) navigator.vibrate(10);
       }
       
       // Update combo and score
@@ -782,6 +847,10 @@ export default function Demo() {
       setCombo(0);
       setMissCount(prev => prev + 1);
       updateAccuracy(false);
+      
+      // Haptic shake & vibration pattern for Miss
+      screenShakeIntensityRef.current = 7.0;
+      if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
       
       playSynthTone(90, 0.25, 'sawtooth', 0.1);
       setHitFeedback({ text: 'MISS', color: '#ff1744', id: Date.now() });
@@ -845,7 +914,28 @@ export default function Demo() {
             <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>Interactive canvas catcher</span>
           </div>
           
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <button 
+              onClick={() => setIsProMotion(p => !p)}
+              style={{
+                fontSize: '0.7rem',
+                padding: '0.4rem 0.8rem',
+                borderRadius: '6px',
+                border: `1px solid ${isProMotion ? 'var(--color-accent)' : 'rgba(255,255,255,0.06)'}`,
+                cursor: 'pointer',
+                background: isProMotion ? 'rgba(209, 172, 107, 0.08)' : 'transparent',
+                color: isProMotion ? 'var(--color-accent)' : 'var(--color-text-muted)',
+                fontWeight: 'bold',
+                marginRight: '0.5rem',
+                transition: 'all 0.2s',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}
+            >
+              <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: isProMotion ? '#00e676' : '#8e94a5' }}></span>
+              PROMOTION 120HZ
+            </button>
             <button 
               onClick={() => setControlMode('keyboard')}
               style={{
@@ -903,6 +993,27 @@ export default function Demo() {
                 <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 800, letterSpacing: '0.05em' }}>SCORE</span>
                 <span style={{ fontSize: '1.35rem', fontWeight: 900, color: 'var(--color-left)', textShadow: 'var(--shadow-left)' }}>{score}</span>
               </div>
+              
+              <div style={{
+                position: 'absolute',
+                top: '12px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                textAlign: 'center',
+                background: 'rgba(5, 6, 11, 0.65)',
+                border: '1px solid var(--glass-border)',
+                padding: '3px 10px',
+                borderRadius: '12px',
+                fontSize: '0.65rem',
+                color: isProMotion ? 'var(--color-accent)' : 'var(--color-text-muted)',
+                fontWeight: 800,
+                textShadow: isProMotion ? 'var(--shadow-accent)' : 'none',
+                letterSpacing: '0.05em',
+                backdropFilter: 'blur(4px)'
+              }}>
+                {isProMotion ? '⚡ PROMOTION 120HZ ACTIVE' : '60HZ FRAME LOCKED'}
+              </div>
+
               <div style={{ position: 'absolute', top: '12px', right: '16px', textAlign: 'right' }}>
                 <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', display: 'block', fontWeight: 800, letterSpacing: '0.05em' }}>ACCURACY</span>
                 <span style={{ fontSize: '1.35rem', fontWeight: 900 }}>{accuracy.toFixed(1)}%</span>
