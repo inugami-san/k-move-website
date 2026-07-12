@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { supabase } from '../supabaseClient';
 
 // Generates procedural notes for the demo based on BPM
 const generateNotes = (bpm, durationSeconds) => {
@@ -41,7 +42,7 @@ const generateNotes = (bpm, durationSeconds) => {
   return notesList;
 };
 
-export default function Demo() {
+export default function Demo({ session, userProfile, fetchUserProfile }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
@@ -59,6 +60,96 @@ export default function Demo() {
   const [niceCount, setNiceCount] = useState(0);
   const [okayCount, setOkayCount] = useState(0);
   const [missCount, setMissCount] = useState(0);
+
+  const statsRef = useRef({ score: 0, maxCombo: 0, accuracy: 100, perfectCount: 0, goodCount: 0, niceCount: 0, okayCount: 0, missCount: 0 });
+  useEffect(() => {
+    statsRef.current = { score, maxCombo, accuracy, perfectCount, goodCount, niceCount, okayCount, missCount };
+  }, [score, maxCombo, accuracy, perfectCount, goodCount, niceCount, okayCount, missCount]);
+
+  const submitScoreToDatabase = async (finalScore, finalCombo, finalAccuracy, p, g, n, o, m) => {
+    const activeUsername = session && userProfile 
+      ? userProfile.username 
+      : (localStorage.getItem('kmove_guest_username') || 'Guest_Challenger');
+
+    const earnedPP = Math.round((finalAccuracy / 100) * 1000 * (1 + finalCombo / 100));
+    
+    let achievedGrade = 'A';
+    if (finalAccuracy >= 99.0) achievedGrade = 'SS';
+    else if (finalAccuracy >= 97.0) achievedGrade = 'S';
+    else if (finalAccuracy >= 90.0) achievedGrade = 'A';
+    else if (finalAccuracy >= 80.0) achievedGrade = 'B';
+    else achievedGrade = 'C';
+
+    try {
+      const scoreEntry = {
+        profile_id: session ? session.user.id : null,
+        username: activeUsername,
+        accuracy: finalAccuracy,
+        max_combo: finalCombo,
+        score: finalScore,
+        pp: earnedPP,
+        grade: achievedGrade,
+        song_title: 'Neon Horizon'
+      };
+
+      const { error: scoreErr } = await supabase
+        .from('scores')
+        .insert(scoreEntry);
+
+      if (scoreErr) {
+        console.error('Error logging score to Supabase:', scoreErr);
+        return;
+      }
+
+      console.log('Score logged to Supabase successfully!');
+
+      if (session && userProfile) {
+        const newPlayCount = userProfile.play_count + 1;
+        let newAvgAccuracy = finalAccuracy;
+        if (userProfile.play_count > 0) {
+          newAvgAccuracy = (userProfile.avg_accuracy * userProfile.play_count + finalAccuracy) / newPlayCount;
+        }
+
+        const newPerfect = userProfile.perfect_count + p;
+        const newGood = userProfile.good_count + g;
+        const newNice = userProfile.nice_count + n;
+        const newOkay = userProfile.okay_count + o;
+        const newMiss = userProfile.miss_count + m;
+        const newPP = userProfile.pp + earnedPP;
+
+        const gradesOrder = ['C', 'B', 'A', 'S', 'SS'];
+        let newGrade = userProfile.grade || 'A';
+        if (gradesOrder.indexOf(achievedGrade) > gradesOrder.indexOf(newGrade)) {
+          newGrade = achievedGrade;
+        }
+
+        const { error: profileErr } = await supabase
+          .from('profiles')
+          .update({
+            play_count: newPlayCount,
+            avg_accuracy: newAvgAccuracy,
+            perfect_count: newPerfect,
+            good_count: newGood,
+            nice_count: newNice,
+            okay_count: newOkay,
+            miss_count: newMiss,
+            pp: newPP,
+            grade: newGrade,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', session.user.id);
+
+        if (profileErr) {
+          console.error('Error updating profile stats:', profileErr);
+        } else {
+          console.log('Profile stats updated successfully!');
+          fetchUserProfile(session.user.id);
+        }
+      }
+    } catch (err) {
+      console.error('Error submitting score details:', err);
+    }
+  };
 
   const canvasRef = useRef(null);
   const skeletonCanvasRef = useRef(null);
@@ -741,7 +832,18 @@ export default function Demo() {
       
       if (songTime >= 31.5) {
         handleStopGame();
-        alert(`Song Finished!\nFinal Score: ${score}\nMax Combo: ${maxCombo}\nAccuracy: ${accuracy.toFixed(1)}%`);
+        const currentStats = statsRef.current;
+        submitScoreToDatabase(
+          currentStats.score,
+          currentStats.maxCombo,
+          currentStats.accuracy,
+          currentStats.perfectCount,
+          currentStats.goodCount,
+          currentStats.niceCount,
+          currentStats.okayCount,
+          currentStats.missCount
+        );
+        alert(`Song Finished!\nFinal Score: ${currentStats.score}\nMax Combo: ${currentStats.maxCombo}\nAccuracy: ${currentStats.accuracy.toFixed(1)}%`);
       } else {
         gameLoopRef.current = requestAnimationFrame(update);
       }

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient';
 
 const mockRankings = [
   { rank: 1, name: 'PoseKing99', accuracy: 99.65, maxCombo: 542, playCount: 840, pp: 9820, country: 'JP', grade: 'SS' },
@@ -12,12 +13,52 @@ const mockRankings = [
 
 export default function Leaderboard() {
   const [searchTerm, setSearchTerm] = useState('');
-  
-  const filteredRankings = mockRankings.filter(player => 
+  const [rankings, setRankings] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchLeaderboard();
+  }, []);
+
+  const fetchLeaderboard = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('pp', { ascending: false })
+        .limit(50);
+
+      if (!error && data && data.length > 0) {
+        // Map database schema to the UI component schema
+        const dbRankings = data.map((player, index) => ({
+          rank: index + 1,
+          name: player.username,
+          accuracy: player.avg_accuracy,
+          maxCombo: player.play_count > 0 ? Math.round(player.avg_accuracy * 4.5) : 0, // estimate for visual display
+          playCount: player.play_count,
+          pp: player.pp,
+          country: player.country || 'US',
+          grade: player.grade || 'A'
+        }));
+        setRankings(dbRankings);
+      } else {
+        // Fallback to mock data if table is empty or error occurs
+        setRankings(mockRankings);
+      }
+    } catch (err) {
+      console.error('Error fetching leaderboard:', err);
+      setRankings(mockRankings);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredRankings = rankings.filter(player => 
     player.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const champion = mockRankings[0];
+  const champion = rankings.length > 0 ? rankings[0] : mockRankings[0];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -44,11 +85,11 @@ export default function Leaderboard() {
             </div>
             <div>
               <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Avg Accuracy</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{champion.accuracy}%</div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{champion.accuracy.toFixed(2)}%</div>
             </div>
             <div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Max Combo</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{champion.maxCombo}x</div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Play Count</div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{champion.playCount}</div>
             </div>
           </div>
         </div>
@@ -102,7 +143,9 @@ export default function Leaderboard() {
           gap: '1rem'
         }}>
           <div>
-            <h2 style={{ fontSize: '1.75rem', fontWeight: 700 }}>Global Leaderboard</h2>
+            <h2 style={{ fontSize: '1.75rem', fontWeight: 700 }}>
+              Global Leaderboard {loading && <span style={{ fontSize: '0.9rem', fontWeight: 400, color: 'var(--color-text-muted)' }}> (loading...)</span>}
+            </h2>
             <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
               Real-time performance rankings based on total Pose Points (pp).
             </p>
@@ -158,7 +201,6 @@ export default function Leaderboard() {
                 <th>Player</th>
                 <th style={{ textAlign: 'center' }}>Grade</th>
                 <th>Accuracy</th>
-                <th>Max Combo</th>
                 <th>Play Count</th>
                 <th style={{ textAlign: 'right', color: 'var(--color-left)' }}>PP</th>
               </tr>
@@ -194,8 +236,7 @@ export default function Leaderboard() {
                         {player.grade}
                       </span>
                     </td>
-                    <td>{player.accuracy}%</td>
-                    <td>{player.maxCombo}x</td>
+                    <td>{player.accuracy.toFixed(2)}%</td>
                     <td>{player.playCount}</td>
                     <td style={{ textAlign: 'right', fontWeight: 700, color: 'var(--color-left)' }}>
                       {player.pp.toLocaleString()}
@@ -204,7 +245,7 @@ export default function Leaderboard() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" style={{ textAlign: 'center', color: 'var(--color-text-muted)', padding: '3rem' }}>
+                  <td colSpan="6" style={{ textAlign: 'center', color: 'var(--color-text-muted)', padding: '3rem' }}>
                     No players found matching "{searchTerm}"
                   </td>
                 </tr>

@@ -1,13 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import Home from './components/Home';
 import Beatmaps from './components/Beatmaps';
 import Leaderboard from './components/Leaderboard';
 import Profile from './components/Profile';
 import Demo from './components/Demo';
+import { supabase } from './supabaseClient';
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
+  const [session, setSession] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session) {
+        fetchUserProfile(session.user.id);
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session) {
+        fetchUserProfile(session.user.id);
+      } else {
+        setUserProfile(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const fetchUserProfile = async (userId) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      if (!error && data) {
+        setUserProfile(data);
+      }
+    } catch (err) {
+      console.error('Error fetching user profile:', err);
+    }
+  };
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
@@ -106,10 +144,10 @@ function App() {
           animation: 'fadeSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards'
         }}>
           {activeTab === 'home' && <Home setActiveTab={setActiveTab} />}
-          {activeTab === 'demo' && <Demo />}
+          {activeTab === 'demo' && <Demo session={session} userProfile={userProfile} fetchUserProfile={fetchUserProfile} />}
           {activeTab === 'beatmaps' && <Beatmaps />}
           {activeTab === 'leaderboard' && <Leaderboard />}
-          {activeTab === 'profile' && <Profile />}
+          {activeTab === 'profile' && <Profile session={session} userProfile={userProfile} setUserProfile={setUserProfile} fetchUserProfile={fetchUserProfile} />}
         </div>
       </main>
 

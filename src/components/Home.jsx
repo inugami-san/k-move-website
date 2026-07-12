@@ -233,7 +233,7 @@ export default function Home({ setActiveTab }) {
             marginBottom: '1rem',
             textShadow: 'var(--shadow-accent)'
           }}>
-            NEXT-GEN RHYTHM SIMULATOR
+            GET DANCING. FEEL THE BEAT.
           </span>
           <h1 style={{
             fontSize: '4.8rem',
@@ -252,7 +252,7 @@ export default function Home({ setActiveTab }) {
             fontWeight: 300,
             maxWidth: '520px'
           }}>
-            Experience physical rhythm gameplay powered by advanced coordinate motion. Stand in front of your camera, calibrate your frame, and catch procedural synth beats in real-time.
+            Transform your room into an arcade dance floor! Step in front of your camera, align your body, and catch sweeping beats with physical motion in real-time.
           </p>
           <div style={{
             display: 'flex',
@@ -264,7 +264,7 @@ export default function Home({ setActiveTab }) {
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             </button>
             <a href="#" className="btn btn-outline" onClick={(e) => { e.preventDefault(); alert("K Move Xcode project is ready inside the directory. Open 'K Move.xcodeproj' in Xcode and deploy to your Mac or iOS device."); }}>
-              Download client
+              Download Client
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2v16m-7-7 7 7 7-7M5 22h14"/></svg>
             </a>
           </div>
@@ -321,7 +321,7 @@ export default function Home({ setActiveTab }) {
           marginBottom: '4rem',
           letterSpacing: '-0.02em'
         }}>
-          Core Gameplay <span className="text-gradient-cyan">Anatomy</span>
+          How to Play <span className="text-gradient-cyan">K Move</span>
         </h2>
         
         <div className="grid-3">
@@ -340,9 +340,9 @@ export default function Home({ setActiveTab }) {
             }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-left)" strokeWidth="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
             </div>
-            <h3 style={{ fontSize: '1.35rem', marginBottom: '0.8rem', fontWeight: 700, letterSpacing: '-0.01em' }}>Camera Hand Tracking</h3>
+            <h3 style={{ fontSize: '1.35rem', marginBottom: '0.8rem', fontWeight: 700, letterSpacing: '-0.01em' }}>Full-Body Motion Control</h3>
             <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem', lineHeight: '1.7', fontWeight: 300 }}>
-              Use your front-facing FaceTime or iOS camera. Standing in position early in Camera Mode rewards you with a guaranteed PERFECT rating anticipation buffer!
+              Just step back and let your camera track your hands. Being in position early rewards you with a PERFECT rating, giving you a friendly anticipation buffer!
             </p>
           </div>
 
@@ -361,9 +361,9 @@ export default function Home({ setActiveTab }) {
             }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8m-4-4v8"/></svg>
             </div>
-            <h3 style={{ fontSize: '1.35rem', marginBottom: '0.8rem', fontWeight: 700, letterSpacing: '-0.01em' }}>Radial Beat System</h3>
+            <h3 style={{ fontSize: '1.35rem', marginBottom: '0.8rem', fontWeight: 700, letterSpacing: '-0.01em' }}>360° Circular Beats</h3>
             <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem', lineHeight: '1.7', fontWeight: 300 }}>
-              Notes flow from outside boundaries inwards. Beats sweep dynamically across 360 degrees, requiring continuous spatial positioning to catch.
+              Notes sweep inward from all directions in full 360° patterns. Stay light on your feet, align your hands, and catch them to keep your combo alive!
             </p>
           </div>
 
@@ -382,9 +382,9 @@ export default function Home({ setActiveTab }) {
             }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-right)" strokeWidth="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             </div>
-            <h3 style={{ fontSize: '1.35rem', marginBottom: '0.8rem', fontWeight: 700, letterSpacing: '-0.01em' }}>Procedural Synthesizer</h3>
+            <h3 style={{ fontSize: '1.35rem', marginBottom: '0.8rem', fontWeight: 700, letterSpacing: '-0.01em' }}>Dynamic Synth Soundtracks</h3>
             <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem', lineHeight: '1.7', fontWeight: 300 }}>
-              Built-in synthesis engine outputs dynamic chiptune and electronic leads. Make custom levels, set custom BPM, and procedural beatmaps will adjust on the fly.
+              Play along to high-energy electronic chiptune tracks! Every hit triggers instant sound plucks, making you feel like part of the music.
             </p>
           </div>
         </div>
@@ -406,10 +406,10 @@ export default function Home({ setActiveTab }) {
               HARDWARE INTEGRATION
             </span>
             <h2 style={{ fontSize: '2.5rem', fontWeight: 900, margin: '0.5rem 0 1.5rem', letterSpacing: '-0.02em' }}>
-              Designed for Apple <span className="text-gradient-orange">Vision & SpriteKit</span>
+              Play Anywhere. <span className="text-gradient-orange">No Controllers Needed.</span>
             </h2>
             <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem', lineHeight: '1.8', fontSize: '1rem', fontWeight: 300 }}>
-              K Move utilizes Apple's high-precision ARKit Body Tracking configurations to lock limbs in 3D coordinate space with near-zero latency, bypassing standard Vision filters on compatible rear cameras. With ProMotion 120Hz rendering support and rating-specific Taptic haptics, gameplay feels incredibly tight, sensory, and tactile.
+              K Move turns your device's camera into an arcade motion sensor. Standing back automatically maps your body, letting you hit notes without holding any controllers. Combined with physical vibration feedbacks and smooth 120 FPS graphics, it feels as responsive as an arcade machine in the palm of your hand.
             </p>
             <ul style={{
               listStyle: 'none',
@@ -419,12 +419,12 @@ export default function Home({ setActiveTab }) {
               marginBottom: '2.5rem'
             }}>
               {[
-                'ARKit body tracking (10ms)',
-                'Taptic feedback confirmations',
-                'ProMotion 120Hz support',
-                'Camera Mode anticipation rewards',
-                '360° sweeping note patterns',
-                'Zero-latency Keysound audio pool'
+                'Zero controllers or extra sensors required',
+                'Feel the beat with phone haptics',
+                'Ultra-smooth high-refresh graphics',
+                'Early-hit anticipation PERFECT rewards',
+                '360° circular sweeping notes',
+                'Dynamic sounds on every hit'
               ].map((feature, idx) => (
                 <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem', fontWeight: 400 }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-left)" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
